@@ -7,7 +7,18 @@ import           Control.Monad.Catch        (MonadThrow)
 import           Control.Monad.IO.Class     (MonadIO)
 import qualified Data.Aeson                 as JSON
 import qualified Data.ByteString.Lazy.Char8 as L8
+import           Data.Time
 import           Network.HTTP.Simple
+
+data VideoSnippet = VideoSnippet {
+    id          :: String, 
+    published   :: UTCTime, 
+    title       :: String, 
+    description :: String, 
+    channelID   :: String, 
+    channelName :: String, 
+    tags        :: [String]
+    }
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
