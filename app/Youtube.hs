@@ -22,12 +22,12 @@ data VideoSnippet = VideoSnippet {
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
-buildSearchListURL Nothing vID key = "https://www.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=" ++ vID ++ "&type=video&key=" ++ key
-buildSearchListURL (Just maxCount) vID key = "https://www.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=" ++ vID ++ "&maxResults=" ++ show maxCount ++ "&type=video&key=" ++ key
+buildSearchListURL Nothing vID key = "https://www.googleapis.com/youtube/v3/search?part=snippet&fields=items(id%2Csnippet(channelId%2CchannelTitle%2Cdescription%2CpublishedAt%2Ctitle))&relatedToVideoId=" ++ vID ++ "&type=video&key=" ++ key
+buildSearchListURL (Just maxCount) vID key = "https://www.googleapis.com/youtube/v3/search?part=snippet&fields=items(id%2Csnippet(channelId%2CchannelTitle%2Cdescription%2CpublishedAt%2Ctitle))&relatedToVideoId=" ++ vID ++ "&maxResults=" ++ show maxCount ++ "&type=video&key=" ++ key
 
 -- Takes a video id and an api key to return a URL for the Video.list API call
 buildVideoListURL :: String -> String -> String
-buildVideoListURL vID key = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" ++ vID ++ "&key=" ++ key
+buildVideoListURL vID key = "https://www.googleapis.com/youtube/v3/videos?part=snippet&fields=items(id%2Csnippet(channelId%2CchannelTitle%2Cdescription%2CpublishedAt%2Ctags%2Ctitle))&id=" ++ vID ++ "&key=" ++ key
 
 -- Same as buildSearchListURL but returns a Request
 buildSearchListRequest :: MonadThrow m => Maybe Int -> String -> String -> m Request
