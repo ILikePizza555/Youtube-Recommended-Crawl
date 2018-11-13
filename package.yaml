@@ -26,6 +26,7 @@ dependencies:
 - http-client
 - http-conduit
 - exceptions >= 0.10.0
+- time
 
 library:
   source-dirs: src
