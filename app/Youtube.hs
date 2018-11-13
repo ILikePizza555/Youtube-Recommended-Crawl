@@ -2,9 +2,9 @@
 
 module Youtube where
 
-import           Control.Monad.IO.Class
-import           Control.Monad.Catch.MonadThrow
--- "qualified" imports into a namespace
+import           Control.Monad
+import           Control.Monad.Catch        (MonadThrow)
+import           Control.Monad.IO.Class     (MonadIO)
 import qualified Data.Aeson                 as JSON
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Network.HTTP.Simple

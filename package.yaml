@@ -25,7 +25,7 @@ dependencies:
 - bytestring
 - http-client
 - http-conduit
-- exceptions
+- exceptions >= 0.10.0
 
 library:
   source-dirs: src
