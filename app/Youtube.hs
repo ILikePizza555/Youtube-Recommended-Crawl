@@ -11,14 +11,24 @@ import           Data.Time
 import           Network.HTTP.Simple
 
 data VideoSnippet = VideoSnippet {
-    id          :: String, 
     published   :: UTCTime, 
     title       :: String, 
     description :: String, 
     channelID   :: String, 
     channelName :: String, 
     tags        :: [String]
-    }
+    } deriving Show
+
+instance JSON.FromJSON VideoSnippet where
+    fromJSON (JSON.Object v) = VideoSnippet
+        <$> v .: "publishedAt"
+        <*> v .: "title"
+        <*> v .: "description"
+        <*> v .: "channelId"
+        <*> v .: "channelTitle"
+        <*> v .:? "tags" .!= []
+
+data Video = Video {id :: String, snippet :: VideoSnippet} deriving Show
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
