@@ -16,7 +16,7 @@ buildSearchListURL (Just maxCount) vID key = "https://www.googleapis.com/youtube
 
 -- Takes a video id and an api key to return a URL for the Video.list API call
 buildVideoListURL :: String -> String -> String
-buildVideoListURL :: vID key = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" ++ vID ++ "&key=" ++ key
+buildVideoListURL vID key = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" ++ vID ++ "&key=" ++ key
 
 -- Same as buildSearchListURL but returns a Request
 buildSearchListRequest :: MonadThrow m => Maybe Int -> String -> String -> m Request
