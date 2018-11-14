@@ -5,7 +5,7 @@ module Youtube where
 import           Control.Monad
 import           Control.Monad.Catch        (MonadThrow)
 import           Control.Monad.IO.Class     (MonadIO)
-import qualified Data.Aeson                 as JSON
+import           Data.Aeson                 as JSON
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Time
 import           Network.HTTP.Simple
