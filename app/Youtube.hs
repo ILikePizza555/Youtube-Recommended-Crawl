@@ -31,12 +31,14 @@ instance JSON.FromJSON VideoSnippet where
             Just v -> (withObject "idObj" $ \o -> o .: "videoId") v
             Nothing -> fail "No field 'id'"
         
-        pub_    <- obj .: "publishedAt"
-        title_  <- obj .: "title"
-        desc_   <- obj .: "description"
-        cID_    <- obj .: "channelId"
-        cName_  <- obj .: "channelTitle"
-        tags_   <- obj .:? "tags" .!= []
+        sObj    <- obj .: "snippet"
+
+        pub_    <- sObj .: "publishedAt"
+        title_  <- sObj .: "title"
+        desc_   <- sObj .: "description"
+        cID_    <- sObj .: "channelId"
+        cName_  <- sObj .: "channelTitle"
+        tags_   <- sObj .:? "tags" .!= []
         return $ VideoSnippet (show id_) pub_ title_ desc_ cID_ cName_ tags_
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
