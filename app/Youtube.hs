@@ -27,8 +27,8 @@ instance JSON.FromJSON VideoSnippet where
     -- withObject :: String -> (Object -> Parser a) -> Value -> Parser a
     parseJSON = withObject "VideoSnippet" $ \obj -> do
         id_ <- case HM.lookup "id" obj of
-            Just String sv -> sv
-            Just o -> o .: "videoId"
+            Just (String sv) -> return sv
+            Just v -> (withObject "idObj" $ \o -> o .: "videoId") v
             Nothing -> fail "No field 'id'"
         
         pub_    <- obj .: "publishedAt"
@@ -37,7 +37,7 @@ instance JSON.FromJSON VideoSnippet where
         cID_    <- obj .: "channelId"
         cName_  <- obj .: "channelTitle"
         tags_   <- obj .:? "tags" .!= []
-        return VideoSnippet id_ pub_ title_ desc_ cID_ cName_ tags_
+        return $ VideoSnippet (show id_) pub_ title_ desc_ cID_ cName_ tags_
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
