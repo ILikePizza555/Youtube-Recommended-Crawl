@@ -69,5 +69,5 @@ buildVideoListRequest :: MonadThrow m => String -> String -> m Request
 buildVideoListRequest a b = parseRequest $ buildVideoListURL a b
 
 -- Performs a request, and assumes the response will be JSON
-performJSONRequest :: (MonadIO io) => Request -> io JSON.Value
+performJSONRequest :: (MonadIO io, FromJSON json) => Request -> io json
 performJSONRequest req = getResponseBody <$> httpJSON req
