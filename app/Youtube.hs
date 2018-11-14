@@ -7,6 +7,7 @@ import           Control.Monad.Catch        (MonadThrow)
 import           Control.Monad.IO.Class     (MonadIO)
 import           Data.Aeson                 as JSON
 import qualified Data.ByteString.Lazy.Char8 as L8
+import           Data.Maybe
 import           Data.Time
 import           Network.HTTP.Simple
 
@@ -35,7 +36,7 @@ data Video = Video {id :: String, snippet :: VideoSnippet} deriving Show
 instance JSON.FromJSON Video where
     -- parseJSON :: Value -> Parser a
     parseJSON (JSON.Object v1)
-        | (lookup "id" v1) >>= (lookup "videoId") >>= isJust = withObject "id" $ \v2 -> Video <$> v2 .: "videoId" <*> v1 .: "snippet"
+        | isJust $ (lookup "id" v1) >>= (lookup "videoId") = withObject "id" $ \v2 -> Video <$> v2 .: "videoId" <*> v1 .: "snippet"
         | otherwise = withText "id" $ \v2 -> (Video v2) <$> v1 .: "snippet"
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
