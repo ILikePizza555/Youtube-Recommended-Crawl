@@ -44,7 +44,7 @@ instance JSON.FromJSON VideoSnippet where
 
 parseItems :: JSON.Value -> [VideoSnippet]
 -- parse :: (a -> Parser b) -> a -> Result b
--- Need to use 
+-- Need to use withObject to convert `v` into on Object value to use with `obj`
 parseItems v = let parser = withObject "items" $ \obj -> obj .: "items" in 
     case parse parser v of
         Error _ -> []
