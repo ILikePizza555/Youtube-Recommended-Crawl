@@ -43,10 +43,12 @@ instance JSON.FromJSON VideoSnippet where
         return $ VideoSnippet (show id_) pub_ title_ desc_ cID_ cName_ tags_
 
 parseItems :: JSON.Value -> [VideoSnippet]
--- (a -> Parser b) -> a -> Result b
-parseItems v = flip parse v withObject "items" $ \obj -> do
-    itemsA <- obj .: "items"
-    return parseJSON itemsA
+-- parse :: (a -> Parser b) -> a -> Result b
+-- Need to use 
+parseItems v = let parser = withObject "items" $ \obj -> obj .: "items" in 
+    case parse parser v of
+        Error _ -> []
+        Success a -> a
 
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
