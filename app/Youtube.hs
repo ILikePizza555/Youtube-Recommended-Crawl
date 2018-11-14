@@ -34,7 +34,7 @@ data Video = Video {id :: String, snippet :: VideoSnippet} deriving Show
 
 instance JSON.FromJSON Video where
     -- parseJSON :: Value -> Parser a
-    fromJSON (JSON.Object v1)
+    parseJSON (JSON.Object v1)
         | (lookup "id" v1) >>= (lookup "videoId") >>= isJust = withObject "id" $ \v2 -> Video <$> v2 .: "videoId" <*> v1 .: "snippet"
         | otherwise = withText "id" $ \v2 -> (Video v2) <$> v1 .: "snippet"
 
