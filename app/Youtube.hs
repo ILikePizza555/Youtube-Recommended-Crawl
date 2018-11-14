@@ -9,9 +9,11 @@ import           Data.Aeson                 as JSON
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Maybe
 import           Data.Time
+import           Data.HashMap.Strict
 import           Network.HTTP.Simple
 
 data VideoSnippet = VideoSnippet {
+    id          :: String
     published   :: UTCTime, 
     title       :: String, 
     description :: String, 
@@ -23,21 +25,19 @@ data VideoSnippet = VideoSnippet {
 instance JSON.FromJSON VideoSnippet where
     -- parseJSON :: Value -> Parser a
     -- withObject :: String -> (Object -> Parser a) -> Value -> Parser a
-    parseJSON = withObject "VideoSnippet" $ \v -> VideoSnippet
-        <$> v .: "publishedAt"
-        <*> v .: "title"
-        <*> v .: "description"
-        <*> v .: "channelId"
-        <*> v .: "channelTitle"
-        <*> v .:? "tags" .!= []
-
-data Video = Video {id :: String, snippet :: VideoSnippet} deriving Show
-
-instance JSON.FromJSON Video where
-    -- parseJSON :: Value -> Parser a
-    parseJSON (JSON.Object v1)
-        | isJust $ (lookup "id" v1) >>= (lookup "videoId") = withObject "id" $ \v2 -> Video <$> v2 .: "videoId" <*> v1 .: "snippet"
-        | otherwise = withText "id" $ \v2 -> (Video v2) <$> v1 .: "snippet"
+    parseJSON = withObject "VideoSnippet" $ \obj -> do
+        id_ <- case lookup "id" obj of
+            Just String sv -> sv
+            Just o -> o .: "videoId"
+            Nothing -> fail "No field 'id'"
+        
+        pub_    <- obj .: "publishedAt"
+        title_  <- obj .: "title"
+        desc_   <- obj .: "description"
+        cID_    <- obj .: "channelId"
+        cName_  <- obj .: "channelTitle"
+        tags_   <- obj .:? "tags" .!= []
+        return VideoSnippet id_ pub_ title_ desc_ cID_ cName_ tags_
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
