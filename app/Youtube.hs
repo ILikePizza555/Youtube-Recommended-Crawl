@@ -23,7 +23,7 @@ data VideoSnippet = VideoSnippet {
 instance JSON.FromJSON VideoSnippet where
     -- parseJSON :: Value -> Parser a
     -- withObject :: String -> (Object -> Parser a) -> Value -> Parser a
-    parseJSON (JSON.Object v) = withObject "VideoSnippet" $ \v -> VideoSnippet
+    parseJSON = withObject "VideoSnippet" $ \v -> VideoSnippet
         <$> v .: "publishedAt"
         <*> v .: "title"
         <*> v .: "description"
