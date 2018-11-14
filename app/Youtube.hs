@@ -20,7 +20,9 @@ data VideoSnippet = VideoSnippet {
     } deriving Show
 
 instance JSON.FromJSON VideoSnippet where
-    fromJSON (JSON.Object v) = VideoSnippet
+    -- parseJSON :: Value -> Parser a
+    -- withObject :: String -> (Object -> Parser a) -> Value -> Parser a
+    parseJSON (JSON.Object v) = withObject "VideoSnippet" $ \v -> VideoSnippet
         <$> v .: "publishedAt"
         <*> v .: "title"
         <*> v .: "description"
@@ -29,6 +31,12 @@ instance JSON.FromJSON VideoSnippet where
         <*> v .:? "tags" .!= []
 
 data Video = Video {id :: String, snippet :: VideoSnippet} deriving Show
+
+instance JSON.FromJSON Video where
+    -- parseJSON :: Value -> Parser a
+    fromJSON (JSON.Object v1)
+        | (lookup "id" v1) >>= (lookup "videoId") >>= isJust = withObject "id" $ \v2 -> Video <$> v2 .: "videoId" <*> v1 .: "snippet"
+        | otherwise = withText "id" $ \v2 -> (Video v2) <$> v1 .: "snippet"
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
