@@ -27,6 +27,7 @@ dependencies:
 - http-conduit
 - exceptions >= 0.10.0
 - time
+- unordered-containers
 
 library:
   source-dirs: src

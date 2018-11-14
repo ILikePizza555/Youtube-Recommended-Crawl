@@ -9,11 +9,11 @@ import           Data.Aeson                 as JSON
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Maybe
 import           Data.Time
-import           Data.HashMap.Strict
+import           Data.HashMap.Strict        as HM
 import           Network.HTTP.Simple
 
 data VideoSnippet = VideoSnippet {
-    id          :: String
+    id          :: String,
     published   :: UTCTime, 
     title       :: String, 
     description :: String, 
@@ -26,7 +26,7 @@ instance JSON.FromJSON VideoSnippet where
     -- parseJSON :: Value -> Parser a
     -- withObject :: String -> (Object -> Parser a) -> Value -> Parser a
     parseJSON = withObject "VideoSnippet" $ \obj -> do
-        id_ <- case lookup "id" obj of
+        id_ <- case HM.lookup "id" obj of
             Just String sv -> sv
             Just o -> o .: "videoId"
             Nothing -> fail "No field 'id'"
