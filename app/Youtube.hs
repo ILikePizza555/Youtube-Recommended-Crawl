@@ -42,6 +42,7 @@ instance JSON.FromJSON VideoSnippet where
         tags_   <- sObj .:? "tags" .!= []
         return $ VideoSnippet (show id_) pub_ title_ desc_ cID_ cName_ tags_
 
+-- Parses a JSON array with key "items" to a list of VideoSnippet
 parseItems :: JSON.Value -> [VideoSnippet]
 -- parse :: (a -> Parser b) -> a -> Result b
 -- Need to use withObject to convert `v` into on Object value to use with `obj`
