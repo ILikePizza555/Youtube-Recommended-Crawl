@@ -22,10 +22,12 @@ description:         Please see the README on GitHub at <https://github.com/ILik
 dependencies:
 - base >= 4.7 && < 5
 - aeson
+- containers
 - bytestring
 - http-client
 - http-conduit
 - exceptions >= 0.10.0
+- split = 0.2.3.3
 - text
 - time
 - unordered-containers
