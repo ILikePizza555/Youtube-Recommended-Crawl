@@ -25,8 +25,12 @@ usageHeader = "Usage: yrc [--help] [-v] [-o FILE] <-t tag1,tag2,tag3,...> BEGIN_
 usageStr :: String
 usageStr = usageInfo usageHeader flags
 
--- Parses the arguments given the command-line
-parseArgs :: [String] ->  IO ([Flag], [String])
+-- Parses the arguments given a list of command-line strings
+parseArgs :: [String] ->  IO ([Flag], String)
 parseArgs xs = case getOpt RequireOrder flags xs of
-                (fl, sl, []) -> return (fl, sl)
+                -- Variable flags, one parameter, no errors
+                (fl, s:[], []) -> return (fl, s)
+                -- too many parameters, no errors
+                (_, xs, []) -> ioError . userError $ "Error: Too many parameters given." ++ usageStr
+                -- Errors given
                 (_, _, errl) -> ioError . userError $ concat errl ++ usageStr
