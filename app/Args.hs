@@ -27,6 +27,6 @@ parseArgs xs = case getOpt RequireOrder flags xs of
                 -- Variable flags, one parameter, no errors
                 (fl, s:[], []) -> return (fl, s)
                 -- too many parameters, no errors
-                (_, xs, []) -> ioError . userError $ "Error: Too many parameters given." ++ usageStr
+                (_, xs, []) -> ioError . userError $ "Error: Too many parameters given. \n" ++ usageStr
                 -- Errors given
                 (_, _, errl) -> ioError . userError $ concat errl ++ usageStr
