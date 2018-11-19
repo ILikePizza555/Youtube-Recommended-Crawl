@@ -16,17 +16,17 @@ flags = [ Option ['v'] ["verbose"] (NoArg Verbose)                "Verbose outpu
         , Option []    ["help"]    (NoArg Help)                   "Prints help output and exits." ]
 
 usageHeader :: String
-usageHeader = "Usage: yrc [--help] [-v] [-o FILE] <-t tag1,tag2,tag3,...> BEGIN_ID"
+usageHeader = "Usage: yrc [--help] [-v] [-o FILE] <-t tag1,tag2,tag3,...> BEGIN_ID API_KEY"
 
 usageStr :: String
 usageStr = usageInfo usageHeader flags
 
 -- Parses the arguments given a list of command-line strings
-parseArgs :: [String] ->  IO ([Flag], String)
+parseArgs :: [String] ->  IO ([Flag], (String, String))
 parseArgs xs = case getOpt RequireOrder flags xs of
-                -- Variable flags, one parameter, no errors
-                (fl, s:[], []) -> return (fl, s)
+                -- Variable flags, two parameters, no errors
+                (fl, bid:key:[], []) -> return (fl, (bid, key))
                 -- too many parameters, no errors
-                (_, xs, []) -> ioError . userError $ "Error: Too many parameters given. \n" ++ usageStr
+                (_, xs, []) -> ioError . userError $ "Error: Incorrect number of parameters. \n" ++ usageStr
                 -- Errors given
                 (_, _, errl) -> ioError . userError $ concat errl ++ usageStr
