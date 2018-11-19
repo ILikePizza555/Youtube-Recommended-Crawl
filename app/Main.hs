@@ -12,10 +12,10 @@ type VideoTree = Tree VideoSnippet
 
 main :: IO ()
 main = do
-    (flags, begin_id) <- catch (getArgs >>= parseArgs) $ \e -> do
+    (flags, (beginId, apiKey) <- catch (getArgs >>= parseArgs) $ \e -> do
                         let err = show (e :: IOException)
                         putStrLn err
                         exitWith $ ExitFailure 1
     
-    putStrLn $ "Starting with " ++ begin_id
+    putStrLn $ "Starting with " ++ beginId
     exitWith ExitSuccess
