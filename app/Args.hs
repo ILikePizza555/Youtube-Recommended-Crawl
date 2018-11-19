@@ -10,10 +10,10 @@ convArgTags :: String -> Flag
 convArgTags s = Tags $ splitOn "," s
 
 flags = [
-    Option ["v"] ["verbose"] NoArg Verbose "Verbose output."
-    Option ["t"] ["tags"] (ReqArg convArgTags "TAGS") "A comma-separated list of tags to look for."
-    Option ["o"] ["output"] (OptArg Output "FILE") "Outputs results to FILE."
-    Option [] ["help"] NoArg Help "Prints help output and exits."
+    Option ["v"] ["verbose"] NoArg Verbose                  "Verbose output."
+    Option ["t"] ["tags"]    (ReqArg convArgTags "TAGS")    "A comma-separated list of tags to look for."
+    Option ["o"] ["output"]  (OptArg Output "FILE")         "Outputs results to FILE."
+    Option []    ["help"]    NoArg Help                     "Prints help output and exits."
 ]
 
 -- Parses the arguments given the command-line
