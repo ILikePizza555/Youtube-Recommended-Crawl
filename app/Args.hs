@@ -21,6 +21,6 @@ flags = [ Option ['v'] ["verbose"] (NoArg Verbose)                "Verbose outpu
 
 -- Parses the arguments given the command-line
 parseArgs :: [String] ->  IO ([Flag], [String])
-parseArgs = case getOpt RequireOrder flags of
+parseArgs xs = case getOpt RequireOrder flags xs of
                 (fl, sl, []) -> return (fl, sl)
                 (_, _, errl) -> ioError . userError (concat errl ++ usageInfo "Usage: yrc [--help] [-v] [-o FILE] <-t tag1,tag2,tag3,...> BEGIN_ID" flags)
