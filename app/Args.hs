@@ -9,14 +9,10 @@ data Flag = Verbose | Tags [String] | Output String | Help deriving (Show)
 convArgTags :: String -> Flag
 convArgTags s = Tags $ splitOn "," s
 
-convArgOutput :: Maybe String -> Flag
-convArgOutput (Just s) = Output s
-convArgOutput Nothing = Output ""
-
 flags :: [OptDescr Flag]
 flags = [ Option ['v'] ["verbose"] (NoArg Verbose)                "Verbose output."
         , Option ['t'] ["tags"]    (ReqArg convArgTags "TAGS")    "A comma-separated list of tags to look for."
-        , Option ['o'] ["output"]  (ReqArg convArgOutput "FILE")  "Outputs results to FILE."
+        , Option ['o'] ["output"]  (ReqArg Output "FILE")         "Outputs results to FILE."
         , Option []    ["help"]    (NoArg Help)                   "Prints help output and exits." ]
 
 usageHeader :: String
