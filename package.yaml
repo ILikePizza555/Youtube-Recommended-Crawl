@@ -32,9 +32,6 @@ dependencies:
 - time
 - unordered-containers
 
-library:
-  source-dirs: src
-
 executables:
   Youtube-Recommended-Crawl-exe:
     main:                Main.hs
@@ -43,16 +40,3 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    dependencies:
-    - Youtube-Recommended-Crawl
-
-tests:
-  Youtube-Recommended-Crawl-test:
-    main:                Spec.hs
-    source-dirs:         test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - Youtube-Recommended-Crawl
