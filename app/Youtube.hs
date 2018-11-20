@@ -10,6 +10,7 @@ import           Data.Aeson.Types           (parse)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Maybe
 import           Data.Time
+import           Data.Text                  (Text)
 import           Data.HashMap.Strict        as HM
 import qualified Data.Vector                as V
 import           Network.HTTP.Simple
