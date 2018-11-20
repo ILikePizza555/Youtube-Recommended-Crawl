@@ -6,7 +6,7 @@ import           Control.Monad
 import           Control.Monad.Catch        (MonadThrow)
 import           Control.Monad.IO.Class     (MonadIO)
 import           Data.Aeson                 as JSON
-import           Data.Aeson.Types           (parse)
+import           Data.Aeson.Types           (parse, Parser)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Maybe
 import           Data.Time
@@ -45,7 +45,7 @@ instance JSON.FromJSON VideoSnippet where
 parseVideoIdObj :: JSON.Value -> Parser Text
 parseVideoIdObj = withObject "wrapper object" $ \obj -> do
     idObj <- obj .: "id"
-    return $ idObj .: "videoId"
+    idObj .: "videoId"
 
 -- Parses a list of videoId objects
 parseVideoIdList :: JSON.Value -> Parser [Text]
@@ -56,7 +56,7 @@ parseSearchListJSON :: JSON.Value -> [Text]
 parseSearchListJSON v = case parse parser v of
                             Error s -> []
                             Success a -> a
-                        where parser = withObject "root object" $ \obj -> parseVideoIdList >>= (obj .: "items")
+                        where parser = withObject "root object" $ \obj -> (obj .: "items") >>= parseVideoIdList
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
