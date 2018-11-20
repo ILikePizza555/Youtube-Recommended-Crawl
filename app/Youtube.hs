@@ -50,6 +50,13 @@ parseVideoIdObj = withObject "wrapper object" $ \obj -> do
 parseVideoIdList :: JSON.Value -> Parser [Text]
 parseVideoIdList = withArray "array" $ \arr -> mapM parseVideoIdObj (V.toList arr)
 
+-- Parses the JSON recieved from a search.list API call
+parseSearchListJSON :: JSON.Value -> [Text]
+parseSearchListJSON v = case parse parser v of
+                            Error s = []
+                            Success a = a
+                        where parser = withObject "root object" $ \obj -> parseVideoIdList >>= (obj .: "items")
+
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
 buildSearchListURL :: Maybe Int -> String -> String -> String
 buildSearchListURL Nothing vID key = "https://www.googleapis.com/youtube/v3/search?part=snippet&fields=items%2Fid%2FvideoId&relatedToVideoId=" ++ vID ++ "&type=video&key=" ++ key
