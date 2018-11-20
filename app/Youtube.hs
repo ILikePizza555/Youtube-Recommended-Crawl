@@ -53,8 +53,8 @@ parseVideoIdList = withArray "array" $ \arr -> mapM parseVideoIdObj (V.toList ar
 -- Parses the JSON recieved from a search.list API call
 parseSearchListJSON :: JSON.Value -> [Text]
 parseSearchListJSON v = case parse parser v of
-                            Error s = []
-                            Success a = a
+                            Error s -> []
+                            Success a -> a
                         where parser = withObject "root object" $ \obj -> parseVideoIdList >>= (obj .: "items")
 
 -- Takes an optional Int, a video id and an API key to return a URL for the Search.list API call
