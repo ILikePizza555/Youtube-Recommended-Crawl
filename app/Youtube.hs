@@ -60,7 +60,7 @@ parseSearchListResponse v = case parse parser v of
 
 -- Parses the JSON recieved from a video.list API call
 parseVideoListResponse :: JSON.Value -> [VideoSnippet]
-parseVideoListResponse v =  case parser parser v of
+parseVideoListResponse v =  case parse parser v of
                             Error s -> []
                             Success a -> a
                             where parser = withObject "root object" $ (.: "items")
