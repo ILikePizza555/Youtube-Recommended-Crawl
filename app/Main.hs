@@ -18,16 +18,18 @@ treeGrowth verbose apiKey maxDepth dp = do
     let vid = videoID dp
     let dep = depth dp
 
-    when verbose $ putStrLn "[Verbose] Performing video.list request on " ++ vid
-    vidSnippet <- buildVideoListRequest vid apiKey >>= performJSONRequest
+    when verbose (putStrLn $ "[Verbose] Performing video.list request on " ++ vid)
+    vidSnippet <- head . parseVideoListResponse <$> (buildVideoListRequest vid apiKey >>= performJSONRequest)
 
-    if dep == maxDept then do
-        when verbose $ putStrLn "[Verbose] Stopping growth at max depth."
+    if dep == maxDepth then do
+        when verbose (putStrLn "[Verbose] Stopping growth at max depth.")
         return (vidSnippet, [])
     else do
-        when verbose $ putStrLn "[Verbose] Performing search.list request on " ++ vid
-        
+        when verbose (putStrLn $ "[Verbose] Performing search.list request on " ++ vid)
+        relatedL <- fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid apiKey >>= performJSONRequest
+        when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
 
+        return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
 
 main :: IO ()
 main = do
