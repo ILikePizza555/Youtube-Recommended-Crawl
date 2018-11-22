@@ -31,16 +31,19 @@ treeGrowth verbose apiKey maxDepth dp = do
                         Left errStr -> errExitMessage errStr
                         Right res -> if null res then errExitMessage "Recieved empty response from Youtube." else head res
 
-    -- Check if we've reached maxDepth, if we have, return no seed values.
+    -- Check if we've reached maxDepth, if we have, return no seed values, otherwise continue to grow.
     if dep == maxDepth then do
         when verbose (putStrLn "[Verbose] Stopping growth at max depth.")
         return (vidSnippet, [])
     else do
         when verbose (putStrLn $ "[Verbose] Performing search.list request on " ++ vid)
-        relatedL <- fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid apiKey >>= performJSONRequest
-        when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
-
-        return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
+        case fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid apiKey >>= performJSONRequest of
+            Left errStr -> do
+                when verbose (putStrLn $ "[Verbose] Stopping growth because of error: " ++ errStr)
+                return (vidSnippet, [])
+            Right res -> do
+                when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
+                return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
 
 main :: IO ()
 main = do
