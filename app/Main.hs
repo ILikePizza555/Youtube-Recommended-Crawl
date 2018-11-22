@@ -27,7 +27,7 @@ treeGrowth verbose apiKey maxDepth dp = do
 
     -- Perform the video.list api request and parse the response. Quit the program on parse failure or no response.
     when verbose (putStrLn $ "[Verbose] Performing video.list request on " ++ vid)
-    parseResult <- case parseVideoListResponse <$> (buildVideoListRequest vid apiKey >>= performJSONRequest) of
+    vidSnippet <- case parseVideoListResponse <$> (buildVideoListRequest vid apiKey >>= performJSONRequest) of
                         Left errStr -> errExitMessage errStr
                         Right res -> if null res then errExitMessage "Recieved empty response from Youtube." else head res
 
