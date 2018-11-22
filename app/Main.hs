@@ -21,10 +21,10 @@ maybeSnippet vid apiKey = case parseVideoListResponse <$> (buildVideoListRequest
                                 hPutStrLn stderr errStr
                                 return Nothing
                             Right resp ->
-                                if null res then do
+                                if null resp then do
                                     hPutStrLn stderr "Recieved empty response from Youtube."
                                     return Nothing
-                                else return Just (head res)
+                                else return Just (head resp)
 
 treeGrowth :: Bool -> String -> Int -> DepthParam -> IO (Maybe VideoSnippet, [DepthParam])
 treeGrowth verbose apiKey maxDepth dp = do
@@ -45,7 +45,7 @@ treeGrowth verbose apiKey maxDepth dp = do
                     Left errStr -> do
                         when verbose (putStrLn $ "[Verbose] Stopping growth because of error: " ++ errStr)
                         return (vidSnippet, [])
-                    Right res -> do
+                    Right relatedL -> do
                         when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
                         return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
 
