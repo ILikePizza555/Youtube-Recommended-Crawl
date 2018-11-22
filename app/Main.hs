@@ -14,42 +14,48 @@ type VideoTree = Tree VideoSnippet
 
 data DepthParam = DepthParam {videoID :: String, depth :: Int} deriving (Show, Eq) 
 
--- Prints an error message to stderr and exits the program
-errExitMessage :: String -> IO ()
-errExitMessage s = do
-    hPutStrLn stderr s
-    exitWith $ ExitFailure 1
+-- Performs a video.list api request, and returns the parsed result. If an error occured, it was printed to the console and Nothing was returned.
+maybeSnippet :: String -> String -> IO (Maybe VideoSnippet)
+maybeSnippet vid apiKey = case parseVideoListResponse <$> (buildVideoListRequest vid apiKey >>= performJSONRequest) of
+                            Left errStr -> do
+                                hPutStrLn stderr errStr
+                                return Nothing
+                            Right resp ->
+                                if null res then do
+                                    hPutStrLn stderr "Recieved empty response from Youtube."
+                                    return Nothing
+                                else return Just (head res)
 
-treeGrowth :: Bool -> String -> Int -> DepthParam -> IO (VideoSnippet, [DepthParam])
+treeGrowth :: Bool -> String -> Int -> DepthParam -> IO (Maybe VideoSnippet, [DepthParam])
 treeGrowth verbose apiKey maxDepth dp = do
     let vid = videoID dp
     let dep = depth dp
 
-    -- Perform the video.list api request and parse the response. Quit the program on parse failure or no response.
     when verbose (putStrLn $ "[Verbose] Performing video.list request on " ++ vid)
-    vidSnippet <- case parseVideoListResponse <$> (buildVideoListRequest vid apiKey >>= performJSONRequest) of
-                        Left errStr -> errExitMessage errStr
-                        Right res -> if null res then errExitMessage "Recieved empty response from Youtube." else head res
-
-    -- Check if we've reached maxDepth, if we have, return no seed values, otherwise continue to grow.
-    if dep == maxDepth then do
-        when verbose (putStrLn "[Verbose] Stopping growth at max depth.")
-        return (vidSnippet, [])
-    else do
-        when verbose (putStrLn $ "[Verbose] Performing search.list request on " ++ vid)
-        case fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid apiKey >>= performJSONRequest of
-            Left errStr -> do
-                when verbose (putStrLn $ "[Verbose] Stopping growth because of error: " ++ errStr)
+    case maybeSnippet vid apiKey of
+        Nothing -> return (Nothing, [])
+        Just vidSnippet -> do
+            -- Check if we've reached maxDepth, if we have, return no seed values, otherwise continue to grow.
+            if dep == maxDepth then do
+                when verbose (putStrLn "[Verbose] Stopping growth at max depth.")
                 return (vidSnippet, [])
-            Right res -> do
-                when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
-                return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
+            else do
+                when verbose (putStrLn $ "[Verbose] Performing search.list request on " ++ vid)
+                case fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid apiKey >>= performJSONRequest of
+                    Left errStr -> do
+                        when verbose (putStrLn $ "[Verbose] Stopping growth because of error: " ++ errStr)
+                        return (vidSnippet, [])
+                    Right res -> do
+                        when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
+                        return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
+
 
 main :: IO ()
 main = do
     (flags, (beginId, apiKey)) <- catch (getArgs >>= parseArgs) $ \e -> do
                         let err = show (e :: IOException)
-                        errExitMessage err
+                        hPutStrLn stderr err
+                        exitWith $ ExitFailure 1
     
     putStrLn $ "Starting with " ++ beginId
     exitWith ExitSuccess
