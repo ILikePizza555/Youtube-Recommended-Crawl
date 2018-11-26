@@ -5,7 +5,7 @@ import Youtube
 
 import Control.Exception
 import Control.Monad
-import Data.Text          (Text)
+import Data.Text          (Text, unpack)
 import Data.Tree
 import System.Environment (getArgs)
 import System.Exit
@@ -37,7 +37,7 @@ maybeSearchList max_len vid api_key = do
     req <- buildSearchListRequest max_len vid api_key
     parse_resp <- parseSearchListResponse <$> performJSONRequest req :: IO (Either String [Text])
 
-    return $ (fmap show) <$> parse_resp
+    return $ (fmap unpack) <$> parse_resp
 
 treeGrowth :: Bool -> String -> Int -> DepthParam -> IO (Maybe VideoSnippet, [DepthParam])
 treeGrowth verbose api_key max_depth dp = do
