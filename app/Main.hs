@@ -16,15 +16,19 @@ data DepthParam = DepthParam {videoID :: String, depth :: Int} deriving (Show, E
 
 -- Performs a video.list api request, and returns the parsed result. If an error occured, it was printed to the console and Nothing was returned.
 maybeSnippet :: String -> String -> IO (Maybe VideoSnippet)
-maybeSnippet vid apiKey = case parseVideoListResponse <$> (buildVideoListRequest vid apiKey >>= performJSONRequest) of
-                            Left errStr -> do
-                                hPutStrLn stderr errStr
-                                return Nothing
-                            Right resp ->
-                                if null resp then do
-                                    hPutStrLn stderr "Recieved empty response from Youtube."
-                                    return Nothing
-                                else return Just (head resp)
+maybeSnippet vid apiKey = do
+    netResp <- buildVideoListRequest vid apiKey >>= performJSONRequest
+    parseResp <- parseVideoListResponse <$> netResp :: IO (Either String [VideoSnippet])
+
+    case parseResp of
+        Left errStr -> do
+            hPutStrLn stderr errStr
+            return Nothing
+        Right resp ->
+            if null resp then do
+                hPutStrLn stderr "Recieved empty response from Youtube."
+                return Nothing
+            else return $ Just (head resp)
 
 treeGrowth :: Bool -> String -> Int -> DepthParam -> IO (Maybe VideoSnippet, [DepthParam])
 treeGrowth verbose apiKey maxDepth dp = do
