@@ -40,20 +40,20 @@ treeGrowth verbose api_key max_depth dp = do
     
     case maybe_snippet of
         Nothing -> return (Nothing, [])
-        Just vidSnippet -> do
+        Just vid_snippet -> do
             -- Check if we've reached max_depth, if we have, return no seed values, otherwise continue to grow.
             if dep == max_depth then do
                 when verbose (putStrLn "[Verbose] Stopping growth at max depth.")
-                return (vidSnippet, [])
+                return (vid_snippet, [])
             else do
                 when verbose (putStrLn $ "[Verbose] Performing search.list request on " ++ vid)
                 case fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid api_key >>= performJSONRequest of
                     Left err_str -> do
                         when verbose (putStrLn $ "[Verbose] Stopping growth because of error: " ++ err_str)
-                        return (vidSnippet, [])
+                        return (vid_snippet, [])
                     Right relatedL -> do
                         when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
-                        return (vidSnippet, map (flip DepthParam (dep + 1) . show) relatedL)
+                        return (vid_snippet, map (flip DepthParam (dep + 1) . show) relatedL)
 
 
 main :: IO ()
