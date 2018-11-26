@@ -5,7 +5,6 @@ import Youtube
 
 import Control.Exception
 import Control.Monad
-import Data.Aeson         (FromJSON)
 import Data.Text          (Text)
 import Data.Tree
 import System.Environment (getArgs)
@@ -19,8 +18,8 @@ data DepthParam = DepthParam {videoID :: String, depth :: Int} deriving (Show, E
 -- Performs a video.list api request, and returns the parsed result. If an error occured, it was printed to the console and Nothing was returned.
 maybeSnippet :: String -> String -> IO (Maybe VideoSnippet)
 maybeSnippet vid api_key = do
-    net_resp <- buildVideoListRequest vid api_key >>= performJSONRequest
-    parse_resp <- parseVideoListResponse <$> net_resp :: IO (Either String [VideoSnippet])
+    req <- buildVideoListRequest vid api_key
+    parse_resp <- parseVideoListResponse <$> performJSONRequest req :: IO (Either String [VideoSnippet])
 
     case parse_resp of
         Left err_str -> do
@@ -35,8 +34,8 @@ maybeSnippet vid api_key = do
 -- Performs a search.list request, parses the value, and returns it as a list of string. If an error occured, it is returned as Left.
 maybeSearchList :: Maybe Int -> String -> String -> IO (Either String [String])
 maybeSearchList max_len vid api_key = do
-    net_resp <- buildSearchListRequest max_len vid api_key >>= performJSONRequest
-    parse_resp <- parseSearchListResponse <$> net_resp
+    req <- buildSearchListRequest max_len vid api_key
+    parse_resp <- parseSearchListResponse <$> performJSONRequest req :: IO (Either String [Text])
 
     return $ (fmap show) <$> parse_resp
 
