@@ -5,6 +5,8 @@ import Youtube
 
 import Control.Exception
 import Control.Monad
+import Data.Aeson         (FromJSON)
+import Data.Text          (Text)
 import Data.Tree
 import System.Environment (getArgs)
 import System.Exit
@@ -30,6 +32,14 @@ maybeSnippet vid api_key = do
                 return Nothing
             else return $ Just (head resp)
 
+-- Performs a search.list request, parses the value, and returns it as a list of string. If an error occured, it is returned as Left.
+maybeSearchList :: Maybe Int -> String -> String -> IO (Either String [String])
+maybeSearchList max_len vid api_key = do
+    net_resp <- buildSearchListRequest max_len vid api_key >>= performJSONRequest
+    parse_resp <- parseSearchListResponse <$> net_resp
+
+    return $ (fmap show) <$> parse_resp
+
 treeGrowth :: Bool -> String -> Int -> DepthParam -> IO (Maybe VideoSnippet, [DepthParam])
 treeGrowth verbose api_key max_depth dp = do
     let vid = videoID dp
@@ -47,7 +57,9 @@ treeGrowth verbose api_key max_depth dp = do
                 return (Just vid_snippet, [])
             else do
                 when verbose (putStrLn $ "[Verbose] Performing search.list request on " ++ vid)
-                case fmap parseSearchListResponse $ buildSearchListRequest (Just 10) vid api_key >>= performJSONRequest of
+                maybe_search_list <- maybeSearchList (Just 10) vid api_key
+
+                case maybe_search_list of
                     Left err_str -> do
                         when verbose (putStrLn $ "[Verbose] Stopping growth because of error: " ++ err_str)
                         return (Just vid_snippet, [])
