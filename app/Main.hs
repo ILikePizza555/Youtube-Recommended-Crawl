@@ -64,7 +64,7 @@ treeGrowth verbose api_key max_depth dp = do
                         return (Just vid_snippet, [])
                     Right relatedL -> do
                         when verbose (putStrLn $ "[Verbose] Got " ++ show relatedL)
-                        return (Just vid_snippet, map (flip DepthParam (dep + 1) . show) relatedL)
+                        return (Just vid_snippet, map (flip DepthParam (dep + 1)) relatedL)
 
 
 main :: IO ()
